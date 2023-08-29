@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PokemonWebApp.Data;
+using PokemonWebApp.Dto;
 using PokemonWebApp.Interfaces;
 using PokemonWebApp.Models;
 using System.Security.Cryptography.X509Certificates;
@@ -66,10 +67,15 @@ namespace PokemonWebApp.Repository
             
         }
 
-        public ICollection<Pokemon> GetPokemons() 
+        public ICollection<Pokemon> GetPokemons()
         {
             return _context.Pokemons.OrderBy(p => p.Id).ToList();
-            
+
+        }
+
+        public Pokemon GetPokemonTrimToUpped(PokemonDto pokemonCreate)
+        {
+            return GetPokemons().Where(c => c.Name.Trim().ToUpper() == pokemonCreate.Name.TrimEnd().ToUpper()).FirstOrDefault();
         }
 
         public bool PokemonExists(int pokeID)
@@ -88,5 +94,8 @@ namespace PokemonWebApp.Repository
             _context.Update(pokemon);
             return Save();
         }
+        
+
+        
     }
 }
