@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PokemonWebApp.Dto;
 using PokemonWebApp.Interfaces;
@@ -6,6 +7,7 @@ using PokemonWebApp.Models;
 
 namespace PokemonWebApp.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ReviewController : Controller

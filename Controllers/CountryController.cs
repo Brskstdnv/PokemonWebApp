@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PokemonWebApp.Dto;
 using PokemonWebApp.Interfaces;
@@ -8,6 +9,7 @@ using PokemonWebApp.Repository;
 
 namespace PokemonWebApp.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CountryController : Controller
@@ -132,7 +134,7 @@ namespace PokemonWebApp.Controllers
                 ModelState.AddModelError("", "Something went wrong");
                 return StatusCode(500,ModelState);  
             }
-            return NoContent();
+            return Ok("Succsefully updated");
         }
 
         [HttpDelete("{countryId}")]

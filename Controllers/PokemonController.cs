@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PokemonWebApp.Dto;
 using PokemonWebApp.Interfaces;
@@ -6,17 +7,24 @@ using PokemonWebApp.Models;
 
 namespace PokemonWebApp.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PokemonController : Controller
     {
         private readonly IPokemonRepository _pokemonRepository;
+        private readonly IOwnerRepository _ownerRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IReviewRepository _reviewRepository;
         private readonly IMapper _mapper;
 
-        public PokemonController(IPokemonRepository pokemonRepository, IMapper mapper)
+        public PokemonController(IPokemonRepository pokemonRepository, IMapper mapper, IReviewRepository reviewRepository /*ICategoryRepository categoryRepository, IOwnerRepository ownerRepository*/)
         {
             _pokemonRepository = pokemonRepository;
-            this._mapper = mapper;
+            _mapper = mapper;
+            _reviewRepository = reviewRepository;
+            //_categoryRepository = categoryRepository;
+            //_ownerRepository = ownerRepository;
         }
 
         [HttpGet]
@@ -69,9 +77,29 @@ namespace PokemonWebApp.Controllers
                 return BadRequest(ModelState);
             }
 
-            var pokemons = _pokemonRepository.GetPokemons()
-                .Where(p => p.Name.Trim().ToUpper() == pokemonCreate.Name.Trim().ToUpper())
-                .FirstOrDefault();
+            var pokemons = _pokemonRepository.GetPokemonTrimToUpped(pokemonCreate);
+
+            var owner = _ownerRepository.GetOwner(ownerId);
+
+            var category = _categoryRepository.GetCategory(categoryId);
+
+            if(owner == null && category != null)
+            {
+                ModelState.AddModelError("", "Put valid owner");
+                return StatusCode(322, ModelState);
+            }
+
+            if(category == null && owner != null)
+            {
+                ModelState.AddModelError("", "Put valid category");
+                return StatusCode(322, ModelState);
+            }
+
+            if(owner == null && category == null)
+            {
+                ModelState.AddModelError("", "Put valid owner and category");
+                return StatusCode(222, ModelState);
+            }
 
             if(pokemons != null)
             {

@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PokemonWebApp.Dto;
 using PokemonWebApp.Interfaces;
 using PokemonWebApp.Models;
 namespace PokemonWebApp.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ReviewerController : Controller
@@ -47,7 +49,7 @@ namespace PokemonWebApp.Controllers
             return Ok(reviewer);
         }
 
-        [HttpGet("/{reviewerId}/review")]
+        [HttpGet("/{reviewerId}/reviews")]
         
         public IActionResult GetReviewBuReviewers(int reviewerId)
         {
